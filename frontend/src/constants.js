@@ -1,0 +1,15 @@
+export const WEIGHT_CLASSES = [
+  'Flyweight',
+  'Bantamweight',
+  'Featherweight',
+  'Lightweight',
+  'Welterweight',
+  'Middleweight',
+  'Light Heavyweight',
+  'Heavyweight',
+  "Women's Strawweight",
+  "Women's Flyweight",
+  "Women's Bantamweight",
+  "Women's Featherweight",
+  'Catch Weight',
+]

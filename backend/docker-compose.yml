@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ufc
+      POSTGRES_PASSWORD: ufc
+      POSTGRES_DB: ufc
+    ports:
+      - "5432:5432"
+    volumes:
+      - ufc_pg_data:/var/lib/postgresql/data
+
+volumes:
+  ufc_pg_data:

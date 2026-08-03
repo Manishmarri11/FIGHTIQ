@@ -1,0 +1,105 @@
+/*
+  Fixed dark, UFC-branded theme: black, red, white. Not adaptive to
+  OS light/dark preference — this is the app's one committed look.
+*/
+:root {
+  --bg: #000000;
+  --surface: #131315;
+  --surface-2: #1c1c1f;
+  --border: #3d1218;
+  --border-strong: #7a1b26;
+
+  --text: #b9b9be;
+  --text-h: #ffffff;
+
+  --accent: #e0112b;
+  --accent-h: #ff2942;
+  --accent-bg: rgba(224, 17, 43, 0.14);
+  --accent-border: rgba(224, 17, 43, 0.55);
+
+  --success: #2ecc71;
+  --success-bg: rgba(46, 204, 113, 0.14);
+  --danger: #ffb020;
+  --danger-bg: rgba(255, 176, 32, 0.12);
+
+  --shadow: rgba(0, 0, 0, 0.5) 0 1px 2px, rgba(0, 0, 0, 0.6) 0 8px 24px -8px;
+  --shadow-lg: rgba(0, 0, 0, 0.6) 0 2px 4px, rgba(0, 0, 0, 0.7) 0 16px 40px -12px;
+
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 14px;
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  --sans: 'Segoe UI', system-ui, Roboto, sans-serif;
+  --heading: 'Segoe UI', system-ui, Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 16px/150% var(--sans);
+  letter-spacing: 0.1px;
+  color-scheme: dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  max-width: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--heading);
+  font-weight: 800;
+  color: var(--text-h);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 32px;
+  margin: 0 0 4px;
+}
+
+h2 {
+  font-size: 18px;
+  line-height: 130%;
+  margin: 0 0 8px;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+code {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: var(--radius-sm);
+  color: var(--text-h);
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--surface-2);
+}

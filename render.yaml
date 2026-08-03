@@ -1,0 +1,34 @@
+# Render Blueprint: provisions the FastAPI service and its Postgres database together.
+# In the Render dashboard: New > Blueprint > connect this repo > Apply.
+services:
+  - type: web
+    name: ufc-predictor-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # Migrations run first, then the seed (a no-op once the table is populated),
+    # then the server starts.
+    startCommand: >
+      alembic upgrade head &&
+      python -m app.scripts.seed_fighters &&
+      uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.0"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ufc-predictor-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      # Set this to the deployed frontend URL after Vercel gives you one,
+      # otherwise the browser will block every API call with a CORS error.
+      - key: CORS_ORIGINS
+        sync: false
+
+databases:
+  - name: ufc-predictor-db
+    plan: free
+    databaseName: ufc
+    user: ufc
