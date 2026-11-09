@@ -40,6 +40,13 @@ through a FastAPI REST API backed by PostgreSQL, with a React frontend.
 | Auth | JWT (python-jose), bcrypt (passlib) |
 | Infra | Docker Compose (local Postgres), Render, Vercel |
 
+## Data & credits
+
+Fight data comes from the [**Ultimate UFC Dataset**](https://www.kaggle.com/datasets/mdabbert/ultimate-ufc-dataset)
+by **mdabbert** on Kaggle. All credit for collecting and maintaining the data goes to
+its author. The dataset is not redistributed in this repository; see
+[Dataset](#dataset) for how to download it.
+
 ## Architecture
 
 ```
@@ -122,6 +129,16 @@ classes, since the model's input distribution assumes same-division matchups.
 ## Running locally
 
 **Prerequisites:** Python 3.13, Node 20+, Docker Desktop
+
+### Dataset
+
+The CSV is **not in this repo** (`*.csv` is gitignored), since the dataset's terms
+don't allow redistribution. Download `ufc-master.csv` from the Kaggle page linked
+under [Data & credits](#data--credits) and place it at:
+
+```
+backend/data/ufc-master.csv
+```
 
 ### Backend
 

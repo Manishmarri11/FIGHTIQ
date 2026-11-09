@@ -22,3 +22,7 @@ dist/
 .idea/
 .DS_Store
 Thumbs.db
+.pytest_cache/
+
+# Dataset (Kaggle terms do not allow republishing; download it yourself, see README)
+*.csv
