@@ -285,6 +285,8 @@
   flex-direction: column;
   gap: 10px;
   padding: 16px;
+  text-decoration: none;
+  color: inherit;
   background: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
@@ -634,6 +636,64 @@
   font-weight: 800;
   color: var(--accent);
   letter-spacing: 0.05em;
+}
+
+/* Fighter detail */
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.fighter-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.fighter-detail-header .btn-primary {
+  text-decoration: none;
+}
+
+.section-title {
+  margin: 32px 0 4px;
+}
+
+.fighter-detail-page .muted-text {
+  margin-bottom: 12px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.detail-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-h);
 }
 
 @media (max-width: 640px) {

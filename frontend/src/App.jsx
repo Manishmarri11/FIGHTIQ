@@ -1,5 +1,6 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
 import FighterList from './pages/FighterList'
+import FighterDetail from './pages/FighterDetail'
 import Comparison from './pages/Comparison'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -59,6 +60,7 @@ function App() {
       <main className="app-main">
         <Routes>
           <Route path="/" element={<FighterList />} />
+          <Route path="/fighters/:id" element={<FighterDetail />} />
           <Route path="/compare" element={<Comparison />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

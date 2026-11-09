@@ -31,13 +31,3 @@ def run_prediction(db: Session, fighter1_id: int, fighter2_id: int) -> tuple[Fig
 
     result = model_service.predict(fighter1, fighter2)
     return fighter1, fighter2, result
-
-
-def fighter_probabilities(fighter1: Fighter, fighter2: Fighter, result: PredictionResult) -> tuple[float, float]:
-    fighter1_prob = (
-        result.red_win_probability if result.red_fighter.id == fighter1.id else result.blue_win_probability
-    )
-    fighter2_prob = (
-        result.red_win_probability if result.red_fighter.id == fighter2.id else result.blue_win_probability
-    )
-    return fighter1_prob, fighter2_prob

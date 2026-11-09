@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user, get_db
 from app.db.models import SavedComparison, User
 from app.schemas.comparison import SavedComparisonCreate, SavedComparisonOut
-from app.services.prediction_service import fighter_probabilities, run_prediction
+from app.services.prediction_service import run_prediction
 
 router = APIRouter(prefix="/comparisons")
 
@@ -32,15 +32,14 @@ def create_comparison(
     current_user: User = Depends(get_current_user),
 ) -> SavedComparisonOut:
     fighter1, fighter2, result = run_prediction(db, request.fighter1_id, request.fighter2_id)
-    fighter1_prob, fighter2_prob = fighter_probabilities(fighter1, fighter2, result)
 
     comparison = SavedComparison(
         user_id=current_user.id,
         fighter1_id=fighter1.id,
         fighter2_id=fighter2.id,
         predicted_winner_id=result.winner.id,
-        fighter1_win_probability=fighter1_prob,
-        fighter2_win_probability=fighter2_prob,
+        fighter1_win_probability=result.fighter1_win_probability,
+        fighter2_win_probability=result.fighter2_win_probability,
     )
     db.add(comparison)
     db.commit()

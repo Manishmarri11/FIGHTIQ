@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import FighterSelect from '../components/FighterSelect'
 import Spinner from '../components/Spinner'
+import { getFighter } from '../api/fighters'
 import { predictMatch } from '../api/predict'
 import { createComparison } from '../api/comparisons'
 import { useAuth } from '../context/AuthContext'
+import { formatRecord } from '../utils'
 
 function StatRow({ label, a, b }) {
   return (
@@ -41,6 +44,22 @@ export default function Comparison() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [saveStatus, setSaveStatus] = useState(null)
+  const [searchParams] = useSearchParams()
+  const preselectedId = searchParams.get('fighter1')
+
+  // Arriving from a fighter's detail page (/compare?fighter1=<id>) pre-fills Fighter 1.
+  useEffect(() => {
+    if (!preselectedId) return
+    let cancelled = false
+    getFighter(preselectedId)
+      .then((data) => {
+        if (!cancelled) setFighter1(data)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [preselectedId])
 
   async function handlePredict() {
     setError(null)
@@ -107,11 +126,7 @@ export default function Comparison() {
               <span className={fighter2IsWinner ? 'is-winner' : ''}>{fighter2.name}</span>
             </div>
             <StatRow label="Weight class" a={fighter1.weight_class} b={fighter2.weight_class} />
-            <StatRow
-              label="Record (W-L, career avg)"
-              a={`${Math.round(fighter1.wins ?? 0)}-${Math.round(fighter1.losses ?? 0)}`}
-              b={`${Math.round(fighter2.wins ?? 0)}-${Math.round(fighter2.losses ?? 0)}`}
-            />
+            <StatRow label="UFC record" a={formatRecord(fighter1)} b={formatRecord(fighter2)} />
             <StatRow
               label="Height (cm)"
               a={fighter1.height_cms?.toFixed(1)}

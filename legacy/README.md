@@ -40,4 +40,10 @@ cd legacy
 streamlit run app.py
 ```
 
-Paths are relative to this directory, so it must be run from inside `legacy/`.
+Paths are relative to this directory, so it must be run from inside `legacy/`. It
+reads the dataset from `../backend/data/ufc-master.csv`, which is not in the repo;
+see "Dataset" in the main README.
+
+`ufc_ml.pkl` here is the original model (a bare logistic regression without
+scaling) that this prototype was built against. The current API uses a retrained
+pipeline in `../backend/ml/`, which expects different input handling.

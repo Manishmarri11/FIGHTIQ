@@ -30,6 +30,11 @@ class Fighter(Base):
     avg_odds: Mapped[float | None] = mapped_column(Float)
     avg_expected_value: Mapped[float | None] = mapped_column(Float)
     total_fights: Mapped[int | None] = mapped_column(Integer)
+    # Actual UFC record after the fighter's most recent fight. The wins/losses columns
+    # above are career averages used as model inputs, not a record.
+    ufc_wins: Mapped[int | None] = mapped_column(Integer)
+    ufc_losses: Mapped[int | None] = mapped_column(Integer)
+    ufc_draws: Mapped[int | None] = mapped_column(Integer)
     last_fight_date: Mapped[date | None] = mapped_column(Date)
 
 

@@ -27,6 +27,9 @@ class FighterOut(BaseModel):
     avg_odds: float | None
     avg_expected_value: float | None
     total_fights: int | None
+    ufc_wins: int | None
+    ufc_losses: int | None
+    ufc_draws: int | None
     last_fight_date: date | None
 
 

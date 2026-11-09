@@ -19,6 +19,15 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", protected_namespaces=())
 
     @property
+    def sqlalchemy_database_url(self) -> str:
+        """Pin the psycopg (v3) driver. A bare postgresql:// URL, which is what Render
+        provides, would otherwise leave the driver choice to SQLAlchemy's default."""
+        for prefix in ("postgresql://", "postgres://"):
+            if self.database_url.startswith(prefix):
+                return "postgresql+psycopg://" + self.database_url[len(prefix):]
+        return self.database_url
+
+    @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 

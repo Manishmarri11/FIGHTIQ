@@ -8,6 +8,11 @@ export default function FighterSelect({ label, value, onChange }) {
   const [options, setOptions] = useState([])
   const [open, setOpen] = useState(false)
 
+  // Keep the input in sync when the parent sets a fighter (e.g. pre-filled from a URL).
+  useEffect(() => {
+    if (value) setQuery(value.name)
+  }, [value])
+
   useEffect(() => {
     if (!query || (value && query === value.name)) {
       setOptions([])

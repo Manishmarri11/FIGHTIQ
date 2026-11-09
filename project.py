@@ -1,42 +1,88 @@
+"""Train the fight outcome model and write it to backend/ml/ufc_ml.pkl.
+
+The model is a single sklearn Pipeline (mean imputation -> standard scaling ->
+logistic regression) fit on a DataFrame, so the saved pickle carries its own
+preprocessing and feature names. The API passes raw fighter stats, with missing
+values as NaN, and the pipeline handles the rest.
+
+Also trains a variant without the betting-odds features, to show how much of the
+accuracy comes from the market rather than from fighter attributes. Only the full
+model is saved.
+
+Run from the repo root: python project.py
+"""
+
+import pickle
+from pathlib import Path
+
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.dummy import DummyClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-import pickle
-data = pd.read_csv("ufc-master.csv")
+from sklearn.metrics import accuracy_score, f1_score, precision_score, roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
-data['Winner'] = data['Winner'].map({'Red': 1, 'Blue': 0})
-imp_columns = ['RedOdds', 'BlueOdds', 'RedExpectedValue', 'BlueExpectedValue', 'BlueCurrentLoseStreak', 'BlueCurrentWinStreak', 'BlueLosses', 'BlueWinsByDecisionMajority', 'BlueWinsByDecisionSplit', 'BlueWinsByDecisionUnanimous', 'BlueWinsByKO', 'BlueWinsBySubmission', 'BlueWins','BlueHeightCms','BlueReachCms', 'BlueWeightLbs', 'RedCurrentLoseStreak', 'RedCurrentWinStreak', 'RedLosses', 'RedWinsByDecisionMajority', 'RedWinsByDecisionSplit', 'RedWinsByDecisionUnanimous', 'RedWinsByKO', 'RedWinsBySubmission', 'RedWins','RedHeightCms','RedReachCms', 'RedWeightLbs']
-y = data['Winner']
-X = data[imp_columns]
-my_imputer = SimpleImputer(strategy = 'mean')
-X_imp = my_imputer.fit_transform(X)
-train_X, val_X, train_y, val_y = train_test_split(X_imp, y, random_state=1)
-model = LogisticRegression(random_state = 1)
-model.fit(train_X, train_y)
-predictions = model.predict(val_X)
+ROOT = Path(__file__).resolve().parent
+CSV_PATH = ROOT / "backend" / "data" / "ufc-master.csv"
+MODEL_PATH = ROOT / "backend" / "ml" / "ufc_ml.pkl"
 
-print(predictions[:10])
-from sklearn.metrics import mean_absolute_error
-mean = mean_absolute_error(predictions, val_y)
-print(mean)
-accuracy = accuracy_score(predictions,val_y)
-print(accuracy)
+# Order must match IMP_COLUMNS in backend/app/services/model_service.py.
+IMP_COLUMNS = [
+    "RedOdds", "BlueOdds", "RedExpectedValue", "BlueExpectedValue",
+    "BlueCurrentLoseStreak", "BlueCurrentWinStreak", "BlueLosses",
+    "BlueWinsByDecisionMajority", "BlueWinsByDecisionSplit", "BlueWinsByDecisionUnanimous",
+    "BlueWinsByKO", "BlueWinsBySubmission", "BlueWins",
+    "BlueHeightCms", "BlueReachCms", "BlueWeightLbs",
+    "RedCurrentLoseStreak", "RedCurrentWinStreak", "RedLosses",
+    "RedWinsByDecisionMajority", "RedWinsByDecisionSplit", "RedWinsByDecisionUnanimous",
+    "RedWinsByKO", "RedWinsBySubmission", "RedWins",
+    "RedHeightCms", "RedReachCms", "RedWeightLbs",
+]
+ODDS_COLUMNS = ["RedOdds", "BlueOdds", "RedExpectedValue", "BlueExpectedValue"]
+NO_ODDS_COLUMNS = [c for c in IMP_COLUMNS if c not in ODDS_COLUMNS]
 
-from sklearn.metrics import f1_score
 
-f1 = f1_score(val_y, predictions)
-print("F1 Score:", f1)
-from sklearn.metrics import precision_score
-precision = precision_score(val_y, predictions)
-print("Precision:", precision)
+def build_model():
+    return make_pipeline(
+        SimpleImputer(strategy="mean"),
+        StandardScaler(),
+        LogisticRegression(random_state=1),
+    )
 
-from sklearn.metrics import classification_report
-print(classification_report(val_y, predictions))
 
-with open('ufc_ml.pkl', 'wb') as file:
-    pickle.dump(model, file)
+def evaluate(name, model, val_X, val_y):
+    predictions = model.predict(val_X)
+    scores = {
+        "accuracy": accuracy_score(val_y, predictions),
+        "f1": f1_score(val_y, predictions),
+        "precision": precision_score(val_y, predictions, zero_division=0),
+        "roc_auc": roc_auc_score(val_y, model.predict_proba(val_X)[:, 1]),
+    }
+    print(f"{name:<24}" + "  ".join(f"{k} {v:.3f}" for k, v in scores.items()))
+    return scores
 
-with open('ufc_ml.pkl', 'rb') as file:
-    loaded_model = pickle.load(file)
+
+def main():
+    data = pd.read_csv(CSV_PATH)
+    y = data["Winner"].map({"Red": 1, "Blue": 0})
+    X = data[IMP_COLUMNS]
+    train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=1)
+
+    baseline = DummyClassifier(strategy="most_frequent").fit(train_X, train_y)
+    evaluate("Always pick Red", baseline, val_X, val_y)
+
+    no_odds = build_model().fit(train_X[NO_ODDS_COLUMNS], train_y)
+    evaluate("Without betting odds", no_odds, val_X[NO_ODDS_COLUMNS], val_y)
+
+    model = build_model().fit(train_X, train_y)
+    evaluate("Full model", model, val_X, val_y)
+
+    with open(MODEL_PATH, "wb") as f:
+        pickle.dump(model, f)
+    print(f"Saved model to {MODEL_PATH.relative_to(ROOT)}")
+
+
+if __name__ == "__main__":
+    main()
